@@ -15,6 +15,18 @@ fi
 # Extract session_id for deterministic character assignment
 session_id=$(echo "$hook_input" | jq -r '.session_id // "default"')
 
+# Extract hook event name for event-specific sounds
+hook_event=$(echo "$hook_input" | jq -r '.hook_event_name // ""')
+
+# Map hook events to sound categories
+# - Notification (idle_prompt): questioning sounds ("Yes sir?", "What do you need?")
+# - Stop: confirmation sounds ("Job's done!", "Ready!")
+case "$hook_event" in
+  "Notification") sound_category="idle" ;;
+  "Stop") sound_category="complete" ;;
+  *) sound_category="" ;;
+esac
+
 # Sound library location (can be overridden via env var)
 SOUND_DIR="${CLAUDE_OVERLORD_SOUNDS:-$HOME/.claude/claude-overlord/sounds}"
 
@@ -38,11 +50,22 @@ hash=$(echo -n "$session_id" | md5 | cut -c1-8)
 char_index=$(( 16#$hash % ${#characters[@]} ))
 character="${characters[$char_index]}"
 
-# Collect all sound files from character directory
+# Collect sound files - try event-specific subdirectory first, then fall back to root
 sounds=()
-while IFS= read -r -d '' file; do
-  sounds+=("$file")
-done < <(find "$SOUND_DIR/$character" -maxdepth 1 -type f \( -name "*.wav" -o -name "*.mp3" -o -name "*.aiff" \) -print0 2>/dev/null)
+
+# Try event-specific subdirectory first (e.g., sounds/marine/idle/)
+if [ -n "$sound_category" ] && [ -d "$SOUND_DIR/$character/$sound_category" ]; then
+  while IFS= read -r -d '' file; do
+    sounds+=("$file")
+  done < <(find "$SOUND_DIR/$character/$sound_category" -maxdepth 1 -type f \( -name "*.wav" -o -name "*.mp3" -o -name "*.aiff" \) -print0 2>/dev/null)
+fi
+
+# Fall back to root character directory for backwards compatibility
+if [ ${#sounds[@]} -eq 0 ]; then
+  while IFS= read -r -d '' file; do
+    sounds+=("$file")
+  done < <(find "$SOUND_DIR/$character" -maxdepth 1 -type f \( -name "*.wav" -o -name "*.mp3" -o -name "*.aiff" \) -print0 2>/dev/null)
+fi
 
 if [ ${#sounds[@]} -eq 0 ]; then
   exit 0

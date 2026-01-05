@@ -6,13 +6,32 @@ This directory contains Starcraft character voice lines organized by character.
 
 ```
 sounds/
-├── marine/          # Terran Marine voice lines
-├── zealot/          # Protoss Zealot voice lines
-├── battlecruiser/   # Terran Battlecruiser voice lines
-├── hydralisk/       # Zerg Hydralisk sounds
-├── carrier/         # Protoss Carrier voice lines
+├── marine/
+│   ├── idle/         # Played on idle_prompt (waiting for input)
+│   │   └── yes_sir.wav
+│   ├── complete/     # Played on Stop (task finished)
+│   │   └── job_done.wav
+│   └── ready.wav     # Fallback (played if no event-specific sounds)
+├── zealot/
+│   ├── idle/
+│   ├── complete/
+│   └── (fallback sounds)
+├── battlecruiser/
+├── hydralisk/
+├── carrier/
 └── (add more characters as needed)
 ```
+
+### Event-Specific Sounds
+
+For contextually appropriate audio, organize sounds into subdirectories:
+
+| Event | Directory | Example Lines |
+|-------|-----------|---------------|
+| `idle_prompt` | `{character}/idle/` | "Yes sir?", "What do you need?", questioning sounds |
+| `Stop` | `{character}/complete/` | "Job's done!", "Ready!", confirmation sounds |
+
+**Fallback behavior**: If no event-specific subdirectory exists, sounds from the root character directory are used. This maintains backwards compatibility.
 
 ## Adding Sounds
 

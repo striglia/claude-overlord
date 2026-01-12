@@ -1,10 +1,10 @@
-# Claude Overlord
+# Claude Overmind
 
 Starcraft notification sounds for Claude Code. Because we're all managing the swarm now. 
 
 ## What it does
 
-Claude Overlord is a [Claude Code hook](https://docs.anthropic.com/en/docs/claude-code/hooks) that plays Starcraft voice lines when:
+Claude Overmind is a [Claude Code hook](https://docs.anthropic.com/en/docs/claude-code/hooks) that plays Starcraft voice lines when:
 
 - **Agent is idle** (Notification hook) - questioning sounds like "Yes sir?" or "What do you need?"
 - **Agent finishes a task** (Stop hook) - confirmation sounds like "Job's done!" or "Ready!"
@@ -20,8 +20,8 @@ Each terminal session gets assigned a consistent character based on `session_id`
 ## Installation
 
 ```bash
-git clone https://github.com/striglia/claude-overlord.git
-cd claude-overlord
+git clone https://github.com/striglia/claude-overmind.git
+cd claude-overmind
 ./install.sh
 ```
 
@@ -39,7 +39,7 @@ cd claude-overlord
 Run `./watch.sh` to see a colorized, real-time view of hook events:
 
 ```
-Claude Overlord - Live Hook Monitor
+Claude Overmind - Live Hook Monitor
 ====================================
 
 Recent history:

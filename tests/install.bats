@@ -3,7 +3,7 @@
 # Tests for install.sh - the installation script
 #
 # What we test:
-# - Directory structure creation (~/.claude/hooks, ~/.claude/claude-overlord/sounds)
+# - Directory structure creation (~/.claude/hooks, ~/.claude/claude-overmind/sounds)
 # - File copying and permissions
 # - settings.json creation and merging
 # - Idempotency (safe to run multiple times)
@@ -43,7 +43,7 @@ teardown() {
 @test "creates sounds directory" {
     run "$PROJECT_ROOT/install.sh"
     [ "$status" -eq 0 ]
-    [ -d "$TEST_HOME/.claude/claude-overlord/sounds" ]
+    [ -d "$TEST_HOME/.claude/claude-overmind/sounds" ]
 }
 
 # --- Script Installation ---
@@ -52,13 +52,13 @@ teardown() {
 @test "copies hook script to hooks directory" {
     run "$PROJECT_ROOT/install.sh"
     [ "$status" -eq 0 ]
-    [ -f "$TEST_HOME/.claude/hooks/claude-overlord.sh" ]
+    [ -f "$TEST_HOME/.claude/hooks/claude-overmind.sh" ]
 }
 
 @test "makes hook script executable" {
     run "$PROJECT_ROOT/install.sh"
     [ "$status" -eq 0 ]
-    [ -x "$TEST_HOME/.claude/hooks/claude-overlord.sh" ]
+    [ -x "$TEST_HOME/.claude/hooks/claude-overmind.sh" ]
 }
 
 # --- Sound Installation ---
@@ -66,7 +66,7 @@ teardown() {
 @test "copies sounds to destination" {
     run "$PROJECT_ROOT/install.sh"
     [ "$status" -eq 0 ]
-    [ -d "$TEST_HOME/.claude/claude-overlord/sounds" ]
+    [ -d "$TEST_HOME/.claude/claude-overmind/sounds" ]
 }
 
 # --- Settings Configuration ---
@@ -112,7 +112,7 @@ teardown() {
 @test "displays installation progress" {
     run "$PROJECT_ROOT/install.sh"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Installing Claude Overlord"* ]]
+    [[ "$output" == *"Installing Claude Overmind"* ]]
     [[ "$output" == *"Installation complete"* ]]
 }
 
@@ -131,5 +131,5 @@ teardown() {
     [ "$status" -eq 0 ]
     run "$PROJECT_ROOT/install.sh"
     [ "$status" -eq 0 ]
-    [ -f "$TEST_HOME/.claude/hooks/claude-overlord.sh" ]
+    [ -f "$TEST_HOME/.claude/hooks/claude-overmind.sh" ]
 }

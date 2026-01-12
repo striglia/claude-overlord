@@ -1,6 +1,6 @@
 # Add Sound Skill
 
-Add and normalize a sound file to the claude-overlord sound library.
+Add and normalize a sound file to the claude-overmind sound library.
 
 ## Usage
 

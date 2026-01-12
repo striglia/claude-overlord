@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Claude Overlord Installer
+# Claude Overmind Installer
 # Sets up Starcraft notification sounds for Claude Code
 
 set -e
@@ -8,10 +8,10 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 HOOKS_DIR="$CLAUDE_DIR/hooks"
-SOUNDS_DIR="$CLAUDE_DIR/claude-overlord/sounds"
+SOUNDS_DIR="$CLAUDE_DIR/claude-overmind/sounds"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 
-echo "Installing Claude Overlord..."
+echo "Installing Claude Overmind..."
 
 # Check for jq dependency
 if ! command -v jq &> /dev/null; then
@@ -28,8 +28,8 @@ mkdir -p "$SOUNDS_DIR"
 
 # Copy the hook script
 echo "Installing hook script..."
-cp "$SCRIPT_DIR/claude-overlord.sh" "$HOOKS_DIR/claude-overlord.sh"
-chmod +x "$HOOKS_DIR/claude-overlord.sh"
+cp "$SCRIPT_DIR/claude-overmind.sh" "$HOOKS_DIR/claude-overmind.sh"
+chmod +x "$HOOKS_DIR/claude-overmind.sh"
 
 # Copy sounds directory (preserving structure)
 echo "Installing sounds..."
@@ -46,7 +46,7 @@ HOOK_CONFIG='{
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/claude-overlord.sh",
+            "command": "~/.claude/hooks/claude-overmind.sh",
             "timeout": 5
           }
         ]
@@ -57,7 +57,7 @@ HOOK_CONFIG='{
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/claude-overlord.sh",
+            "command": "~/.claude/hooks/claude-overmind.sh",
             "timeout": 5
           }
         ]
@@ -92,10 +92,10 @@ echo ""
 echo "Installation complete!"
 echo ""
 echo "Next steps:"
-echo "  1. Add sound files to ~/.claude/claude-overlord/sounds/{character}/"
+echo "  1. Add sound files to ~/.claude/claude-overmind/sounds/{character}/"
 echo "     (see sounds/README.md for sourcing options)"
 echo "  2. Restart Claude Code to activate hooks"
 echo ""
 echo "Test the installation:"
-echo "  echo '{\"session_id\":\"test\"}' | ~/.claude/hooks/claude-overlord.sh"
+echo "  echo '{\"session_id\":\"test\"}' | ~/.claude/hooks/claude-overmind.sh"
 echo ""

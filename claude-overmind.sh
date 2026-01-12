@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Claude Overlord - Starcraft notification sounds for Claude Code
+# Claude Overmind - Starcraft notification sounds for Claude Code
 # Plays character voice lines when hooks trigger
 
 # Read hook input from stdin (JSON with session_id, hook_event_name, etc.)
@@ -28,7 +28,7 @@ case "$hook_event" in
 esac
 
 # Sound library location (can be overridden via env var)
-SOUND_DIR="${CLAUDE_OVERLORD_SOUNDS:-$HOME/.claude/claude-overlord/sounds}"
+SOUND_DIR="${CLAUDE_OVERMIND_SOUNDS:-$HOME/.claude/claude-overmind/sounds}"
 
 # Exit gracefully if sounds directory doesn't exist
 if [ ! -d "$SOUND_DIR" ]; then
@@ -79,7 +79,7 @@ sound_file="${sounds[$sound_index]}"
 afplay "$sound_file" &
 
 # Log playback for debugging and clip analysis
-LOG_FILE="${CLAUDE_OVERLORD_LOG:-$HOME/.claude/claude-overlord/playback.log}"
+LOG_FILE="${CLAUDE_OVERMIND_LOG:-$HOME/.claude/claude-overmind/playback.log}"
 LOG_DIR=$(dirname "$LOG_FILE")
 if [ -d "$LOG_DIR" ]; then
   # Log format: timestamp session_prefix hook_event character sound_file

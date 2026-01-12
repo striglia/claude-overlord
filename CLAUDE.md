@@ -1,4 +1,4 @@
-# Claude Overlord
+# Claude Overmind
 
 Starcraft notification sounds for Claude Code - plays character voice lines when agents need attention.
 
@@ -6,7 +6,7 @@ Starcraft notification sounds for Claude Code - plays character voice lines when
 
 | Task | Command |
 |------|---------|
-| Test sound script | `echo '{"session_id":"test123"}' \| ./claude-overlord.sh` |
+| Test sound script | `echo '{"session_id":"test123"}' \| ./claude-overmind.sh` |
 | Play test sound | `afplay sounds/marine/ready.wav` |
 | Watch hooks live | `./watch.sh` |
 | Check jq installed | `jq --version` |
@@ -20,15 +20,15 @@ This is a Claude Code hook that installs into `~/.claude/`:
 ~/.claude/
 ├── settings.json                    # Hook config (merge with existing)
 ├── hooks/
-│   └── claude-overlord.sh           # Main script (from this repo)
-└── claude-overlord/
+│   └── claude-overmind.sh           # Main script (from this repo)
+└── claude-overmind/
     └── sounds/{character}/*.wav     # Sound files
 ```
 
 ### Key Files
 
 - `plan.md` - Full spec with implementation details
-- `claude-overlord.sh` - Main hook script (to be created)
+- `claude-overmind.sh` - Main hook script (to be created)
 - `sounds/` - Sound library organized by character (to be populated)
 - `install.sh` - Installation script (to be created)
 
@@ -45,10 +45,10 @@ This is a Claude Code hook that installs into `~/.claude/`:
 
 ```bash
 # Simulate a hook call
-echo '{"session_id":"abc123","hook_event_name":"Stop"}' | ./claude-overlord.sh
+echo '{"session_id":"abc123","hook_event_name":"Stop"}' | ./claude-overmind.sh
 
 # Different session_id = different character
-echo '{"session_id":"xyz789","hook_event_name":"Stop"}' | ./claude-overlord.sh
+echo '{"session_id":"xyz789","hook_event_name":"Stop"}' | ./claude-overmind.sh
 ```
 
 ### Adding sounds
@@ -62,7 +62,7 @@ echo '{"session_id":"xyz789","hook_event_name":"Stop"}' | ./claude-overlord.sh
 Run `./watch.sh` to see a colorized, real-time view of hook events:
 
 ```
-Claude Overlord - Live Hook Monitor
+Claude Overmind - Live Hook Monitor
 ====================================
 
 Recent history:
@@ -84,11 +84,11 @@ Add your session ID and assigned unit to Claude Code's statusline. Add this snip
 # Session ID colors - 16 distinct colors matching watch.sh
 SESSION_COLORS=(196 208 220 82 46 51 39 27 93 201 213 172 35 99 214 160)
 
-# Add claude-overlord info (only if installed)
+# Add claude-overmind info (only if installed)
 session_id=$(echo "$input" | jq -r '.session_id // empty' | cut -c1-6)
 if [ -n "$session_id" ]; then
-    if jq -e '.hooks[][] | .hooks[]? | select(.command | contains("claude-overlord"))' ~/.claude/settings.json &>/dev/null; then
-        SOUND_DIR="$HOME/.claude/claude-overlord/sounds"
+    if jq -e '.hooks[][] | .hooks[]? | select(.command | contains("claude-overmind"))' ~/.claude/settings.json &>/dev/null; then
+        SOUND_DIR="$HOME/.claude/claude-overmind/sounds"
         if [ -d "$SOUND_DIR" ]; then
             characters=()
             while IFS= read -r -d '' dir; do
@@ -106,27 +106,27 @@ if [ -n "$session_id" ]; then
                 reset='\x1b[0m'
 
                 # Append to your status variable:
-                status="${status}\n${session_color}[claude-overlord: ${session_id} ${character}]${reset}"
+                status="${status}\n${session_color}[claude-overmind: ${session_id} ${character}]${reset}"
             fi
         fi
     fi
 fi
 ```
 
-This displays `[claude-overlord: 1caa40 marine]` with the same color coding as `watch.sh`, making it easy to correlate sessions.
+This displays `[claude-overmind: 1caa40 marine]` with the same color coding as `watch.sh`, making it easy to correlate sessions.
 
 ## Installation (for users)
 
 ```bash
 # 1. Clone repo
-git clone https://github.com/striglia/claude-overlord.git
+git clone https://github.com/striglia/claude-overmind.git
 
 # 2. Run installer (once created)
 ./install.sh
 
 # Or manually:
-# - Copy claude-overlord.sh to ~/.claude/hooks/
-# - Copy sounds/ to ~/.claude/claude-overlord/sounds/
+# - Copy claude-overmind.sh to ~/.claude/hooks/
+# - Copy sounds/ to ~/.claude/claude-overmind/sounds/
 # - Merge hook config into ~/.claude/settings.json
 ```
 
@@ -135,4 +135,4 @@ git clone https://github.com/striglia/claude-overlord.git
 - **macOS only** - uses `afplay` which is macOS-specific
 - **jq required** - install via `brew install jq`
 - **Sound files not included** - must be sourced separately (see plan.md)
-- **Tilde expansion** - `~/.claude/hooks/claude-overlord.sh` in settings.json may need full path on some systems
+- **Tilde expansion** - `~/.claude/hooks/claude-overmind.sh` in settings.json may need full path on some systems

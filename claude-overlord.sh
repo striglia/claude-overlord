@@ -35,11 +35,11 @@ if [ ! -d "$SOUND_DIR" ]; then
   exit 0
 fi
 
-# Get list of character directories
+# Get list of character directories (sorted for deterministic assignment)
 characters=()
 while IFS= read -r -d '' dir; do
   characters+=("$(basename "$dir")")
-done < <(find "$SOUND_DIR" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null)
+done < <(find "$SOUND_DIR" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
 
 if [ ${#characters[@]} -eq 0 ]; then
   exit 0

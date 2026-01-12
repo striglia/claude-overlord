@@ -66,8 +66,44 @@ For contextually appropriate audio, organize sounds into subdirectories:
 ### Option 2: Fan Archives
 
 - Various fan sites host extracted sounds
-- YouTube "all unit quotes" compilations - use `yt-dlp` to download, then split
+- YouTube "all unit quotes" compilations - use `yt-dlp` to download, then split with `clip-sounds-vad.py`
 - Liquipedia/Wiki often link to sound files
+
+## Splitting Audio Compilations
+
+Two scripts are available for splitting compilation files into individual clips:
+
+### clip-sounds-vad.py (Recommended)
+
+Uses Voice Activity Detection (Silero VAD) to detect speech segments. Works much better than silence detection when there's background music or noise.
+
+```bash
+# Install dependencies
+pip install torch torchaudio soundfile numpy packaging
+
+# Or run with uvx (no install needed)
+uvx --with torch --with torchaudio --with soundfile --with numpy --with packaging \
+    python clip-sounds-vad.py marine sounds/marine/marine_quotes.wav
+
+# Options
+--min-duration 0.5   # Minimum clip length (default: 0.5s)
+--max-duration 10.0  # Maximum clip length (default: 10.0s)
+--threshold 0.5      # VAD threshold 0-1 (default: 0.5, higher = stricter)
+--keep-original      # Don't delete source file after splitting
+```
+
+**Note**: VAD is trained for human speech. For Zerg units (hydralisk, mutalisk, zergling) and heavily processed voices (archon), use `clip-sounds.sh` instead.
+
+### clip-sounds.sh (Fallback)
+
+Uses ffmpeg silence detection. Works for non-human sounds but may produce long clips when there's background music.
+
+```bash
+./clip-sounds.sh marine sounds/marine/marine_quotes.wav
+
+# Adjust threshold for different audio
+NOISE_THRESHOLD=-15dB ./clip-sounds.sh battlecruiser sounds/battlecruiser/quotes.wav
+```
 
 ## Audio Normalization
 

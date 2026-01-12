@@ -15,11 +15,17 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Parameters (defaults from spec)
-NOISE_THRESHOLD="-30dB"
+# Parameters (NOISE_THRESHOLD can be overridden via environment variable)
+NOISE_THRESHOLD="${NOISE_THRESHOLD:--20dB}"
 MIN_SILENCE_DURATION="0.3"
 MIN_CLIP_DURATION="0.5"
 MAX_CLIP_DURATION="10"
+
+# Sanity check thresholds
+# SC2 voice lines are typically 1-5 seconds
+# A file should have roughly duration/3 clips (assuming ~3s average)
+MIN_EXPECTED_RATIO="0.1"   # At least 1 clip per 10 seconds
+MAX_EXPECTED_RATIO="2.0"   # At most 2 clips per second
 
 # Check dependencies
 check_deps() {
@@ -28,6 +34,52 @@ check_deps() {
         echo "Install with: brew install ffmpeg"
         exit 1
     fi
+}
+
+# Sanity check: verify clip count is plausible for file duration
+# Returns 0 if OK, 1 if suspicious
+sanity_check() {
+    local num_clips="$1"
+    local duration="$2"
+    local threshold="$3"
+
+    # Calculate clips per second ratio
+    local ratio=$(echo "scale=4; $num_clips / $duration" | bc -l)
+
+    # Check if ratio is within expected bounds
+    local too_few=$(echo "$ratio < $MIN_EXPECTED_RATIO" | bc -l)
+    local too_many=$(echo "$ratio > $MAX_EXPECTED_RATIO" | bc -l)
+
+    if [ "$too_few" -eq 1 ]; then
+        local avg_duration=$(echo "scale=1; $duration / $num_clips" | bc -l)
+        echo -e "${RED}Warning: Only $num_clips clips detected for ${duration}s file (avg ${avg_duration}s per clip)${NC}"
+        echo -e "${YELLOW}This suggests the silence threshold ($threshold) is too conservative.${NC}"
+        echo -e "${YELLOW}The audio's 'silence' may be louder than $threshold.${NC}"
+        echo ""
+        echo "Options:"
+        echo "  1. Try a higher threshold: NOISE_THRESHOLD=-15dB $0 $CHARACTER \"$INPUT_FILE\""
+        echo "  2. Use subdivide-clip.sh after splitting to fix long clips"
+        echo ""
+        read -p "Continue anyway? [y/N] " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            return 1
+        fi
+    fi
+
+    if [ "$too_many" -eq 1 ]; then
+        local avg_duration=$(echo "scale=2; $duration / $num_clips" | bc -l)
+        echo -e "${YELLOW}Warning: $num_clips clips detected for ${duration}s file (avg ${avg_duration}s per clip)${NC}"
+        echo -e "${YELLOW}This may indicate over-splitting. Consider a lower threshold.${NC}"
+        echo ""
+        read -p "Continue anyway? [y/N] " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            return 1
+        fi
+    fi
+
+    return 0
 }
 
 # Usage info
@@ -41,12 +93,21 @@ usage() {
     echo "Example:"
     echo "  $0 marine sounds/marine/all_quotes.wav"
     echo ""
+    echo "Environment variables:"
+    echo "  NOISE_THRESHOLD  Silence detection threshold (default: -20dB)"
+    echo "                   Higher values (e.g., -15dB) detect more silence"
+    echo "                   Lower values (e.g., -25dB) detect less silence"
+    echo ""
+    echo "Example with custom threshold:"
+    echo "  NOISE_THRESHOLD=-15dB $0 battlecruiser sounds/battlecruiser/quotes.wav"
+    echo ""
     echo "The script will:"
     echo "  1. Detect silence gaps in the audio"
-    echo "  2. Split into individual clips"
-    echo "  3. Normalize each clip"
-    echo "  4. Save as clip_001.wav, clip_002.wav, etc."
-    echo "  5. Delete the original file"
+    echo "  2. Validate clip count is plausible (prompt if suspicious)"
+    echo "  3. Split into individual clips"
+    echo "  4. Normalize each clip"
+    echo "  5. Save as clip_001.wav, clip_002.wav, etc."
+    echo "  6. Delete the original file"
     exit 1
 }
 
@@ -115,7 +176,15 @@ if [ "$NUM_CLIPS" -eq 1 ]; then
     echo -e "${YELLOW}Warning: Only 1 clip detected. File may already be a single sound bite.${NC}"
 fi
 
-echo "Found $NUM_CLIPS voice lines"
+echo "Found $NUM_CLIPS voice lines (threshold: $NOISE_THRESHOLD)"
+
+# Sanity check before proceeding
+if ! sanity_check "$NUM_CLIPS" "$DURATION" "$NOISE_THRESHOLD"; then
+    echo -e "${RED}Aborted.${NC}"
+    rm -rf "$TMP_DIR"
+    exit 1
+fi
+
 echo "Extracting clips..."
 
 SAVED_COUNT=0

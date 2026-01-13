@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 #
-# Tests for claude-overlord.sh - the main hook script
+# Tests for claude-overmind.sh - the main hook script
 #
 # What we test:
 # - Graceful degradation when dependencies (jq) or resources (sounds) are missing
@@ -34,33 +34,33 @@ teardown() {
 
 @test "exits gracefully when jq is not available" {
     mock_no_jq
-    run bash -c 'echo "{}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
 }
 
 @test "outputs error message when jq is missing" {
     mock_no_jq
-    run bash -c 'echo "{}" | "$PROJECT_ROOT/claude-overlord.sh" 2>&1'
+    run bash -c 'echo "{}" | "$PROJECT_ROOT/claude-overmind.sh" 2>&1'
     [ "$status" -eq 0 ]
     [[ "$output" == *"jq"* ]]
 }
 
 @test "exits gracefully when sounds directory does not exist" {
-    export CLAUDE_OVERLORD_SOUNDS="/nonexistent/path"
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    export CLAUDE_OVERMIND_SOUNDS="/nonexistent/path"
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
 }
 
 @test "exits gracefully when sounds directory is empty" {
     # TEST_SOUNDS_DIR exists but has no character subdirectories
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
 }
 
 @test "exits gracefully when character directory has no sound files" {
     mkdir -p "$TEST_SOUNDS_DIR/marine"
     # marine directory exists but has no .wav/.mp3/.aiff files
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
 }
 
@@ -69,14 +69,14 @@ teardown() {
 
 @test "plays a sound when sounds are available" {
     create_mock_sounds
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"MOCK_AFPLAY"* ]]
 }
 
 @test "uses default session_id when not provided in input" {
     create_mock_sounds
-    run bash -c 'echo "{}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"MOCK_AFPLAY"* ]]
 }
@@ -88,7 +88,7 @@ teardown() {
 @test "maps Notification event to idle sound category" {
     create_mock_sounds
     create_event_sounds
-    run bash -c 'echo "{\"session_id\":\"test\",\"hook_event_name\":\"Notification\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\",\"hook_event_name\":\"Notification\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"MOCK_AFPLAY"* ]]
 }
@@ -96,7 +96,7 @@ teardown() {
 @test "maps Stop event to complete sound category" {
     create_mock_sounds
     create_event_sounds
-    run bash -c 'echo "{\"session_id\":\"test\",\"hook_event_name\":\"Stop\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\",\"hook_event_name\":\"Stop\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"MOCK_AFPLAY"* ]]
 }
@@ -105,7 +105,7 @@ teardown() {
     create_mock_sounds
     mkdir -p "$TEST_SOUNDS_DIR/marine/idle"
     # idle directory exists but is empty - should fall back to marine/
-    run bash -c 'echo "{\"session_id\":\"test\",\"hook_event_name\":\"Notification\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\",\"hook_event_name\":\"Notification\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"MOCK_AFPLAY"* ]]
 }
@@ -116,7 +116,7 @@ teardown() {
 @test "finds .wav files" {
     mkdir -p "$TEST_SOUNDS_DIR/marine"
     touch "$TEST_SOUNDS_DIR/marine/ready.wav"
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"ready.wav"* ]]
 }
@@ -124,7 +124,7 @@ teardown() {
 @test "finds .mp3 files" {
     mkdir -p "$TEST_SOUNDS_DIR/zergling"
     touch "$TEST_SOUNDS_DIR/zergling/hiss.mp3"
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"MOCK_AFPLAY"* ]]
 }
@@ -132,7 +132,7 @@ teardown() {
 @test "finds .aiff files" {
     mkdir -p "$TEST_SOUNDS_DIR/zealot"
     touch "$TEST_SOUNDS_DIR/zealot/foraiur.aiff"
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
     [[ "$output" == *"MOCK_AFPLAY"* ]]
 }
@@ -142,13 +142,13 @@ teardown() {
 
 @test "handles malformed JSON gracefully" {
     create_mock_sounds
-    run bash -c 'echo "not valid json" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "not valid json" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
 }
 
 @test "handles empty input gracefully" {
     create_mock_sounds
-    run bash -c 'echo "" | "$PROJECT_ROOT/claude-overlord.sh"'
+    run bash -c 'echo "" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
 }
 
@@ -157,19 +157,19 @@ teardown() {
 
 @test "logs playback when log directory exists" {
     create_mock_sounds
-    mkdir -p "$TEST_HOME/.claude/claude-overlord"
-    export CLAUDE_OVERLORD_LOG="$TEST_HOME/.claude/claude-overlord/playback.log"
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    mkdir -p "$TEST_HOME/.claude/claude-overmind"
+    export CLAUDE_OVERMIND_LOG="$TEST_HOME/.claude/claude-overmind/playback.log"
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
-    [ -f "$CLAUDE_OVERLORD_LOG" ]
+    [ -f "$CLAUDE_OVERMIND_LOG" ]
     # Log should contain character name and clip filename
-    grep -q "marine" "$CLAUDE_OVERLORD_LOG" || grep -q "zealot" "$CLAUDE_OVERLORD_LOG" || grep -q "zergling" "$CLAUDE_OVERLORD_LOG"
+    grep -q "marine" "$CLAUDE_OVERMIND_LOG" || grep -q "zealot" "$CLAUDE_OVERMIND_LOG" || grep -q "zergling" "$CLAUDE_OVERMIND_LOG"
 }
 
 @test "skips logging when log directory does not exist" {
     create_mock_sounds
-    export CLAUDE_OVERLORD_LOG="$TEST_HOME/nonexistent/playback.log"
-    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overlord.sh"'
+    export CLAUDE_OVERMIND_LOG="$TEST_HOME/nonexistent/playback.log"
+    run bash -c 'echo "{\"session_id\":\"test\"}" | "$PROJECT_ROOT/claude-overmind.sh"'
     [ "$status" -eq 0 ]
-    [ ! -f "$CLAUDE_OVERLORD_LOG" ]
+    [ ! -f "$CLAUDE_OVERMIND_LOG" ]
 }

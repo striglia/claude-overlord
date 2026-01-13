@@ -26,7 +26,7 @@ jobs:
 
       - name: Make scripts executable
         run: |
-          chmod +x claude-overlord.sh
+          chmod +x claude-overmind.sh
           chmod +x install.sh
           chmod +x download-sound.sh
           chmod +x clip-sounds.sh
@@ -47,4 +47,4 @@ jobs:
 
       - name: Run ShellCheck
         run: |
-          shellcheck claude-overlord.sh install.sh download-sound.sh clip-sounds.sh subdivide-clip.sh || true
+          shellcheck claude-overmind.sh install.sh download-sound.sh clip-sounds.sh subdivide-clip.sh || true

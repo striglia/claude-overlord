@@ -29,7 +29,7 @@ setup_test_env() {
     export TEST_HOME=$($REAL_MKTEMP -d)
     export HOME="$TEST_HOME"
     export TEST_SOUNDS_DIR=$($REAL_MKTEMP -d)
-    export CLAUDE_OVERLORD_SOUNDS="$TEST_SOUNDS_DIR"
+    export CLAUDE_OVERMIND_SOUNDS="$TEST_SOUNDS_DIR"
 }
 
 # Clean up test environment

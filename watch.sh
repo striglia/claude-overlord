@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# watch.sh - Live hook monitoring for Claude Overlord
+# watch.sh - Live hook monitoring for Claude Overmind
 # Shows colorized, formatted view of hook events as they fire
 
 # 16 distinct, readable colors (256-color mode)
@@ -25,7 +25,7 @@ COLORS=(
 )
 
 # Log file location
-LOG_FILE="${CLAUDE_OVERLORD_LOG:-$HOME/.claude/claude-overlord/playback.log}"
+LOG_FILE="${CLAUDE_OVERMIND_LOG:-$HOME/.claude/claude-overmind/playback.log}"
 
 # Number of historical entries to show on startup
 HISTORY_COUNT=5
@@ -90,7 +90,7 @@ if [ ! -f "$LOG_FILE" ]; then
   done
 fi
 
-echo "Claude Overlord - Live Hook Monitor"
+echo "Claude Overmind - Live Hook Monitor"
 echo "===================================="
 echo ""
 

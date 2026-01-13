@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Test that character assignment is deterministic and consistent
-# across claude-overlord.sh and statusline
+# across claude-overmind.sh and statusline
 
 set -e
 
-SOUND_DIR="${CLAUDE_OVERLORD_SOUNDS:-$HOME/.claude/claude-overlord/sounds}"
+SOUND_DIR="${CLAUDE_OVERMIND_SOUNDS:-$HOME/.claude/claude-overmind/sounds}"
 TEST_SESSION_ID="test-session-12345"
 
 echo "Testing character assignment consistency..."
@@ -13,7 +13,7 @@ echo "Sound dir: $SOUND_DIR"
 echo "Test session: $TEST_SESSION_ID"
 echo ""
 
-# Get sorted character list (same as claude-overlord.sh)
+# Get sorted character list (same as claude-overmind.sh)
 characters=()
 while IFS= read -r -d '' dir; do
   characters+=("$(basename "$dir")")
@@ -22,7 +22,7 @@ done < <(find "$SOUND_DIR" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null |
 echo "Characters found (${#characters[@]}): ${characters[*]}"
 echo ""
 
-# Compute character assignment (same algorithm as claude-overlord.sh)
+# Compute character assignment (same algorithm as claude-overmind.sh)
 hash=$(echo -n "$TEST_SESSION_ID" | md5 | cut -c1-8)
 char_index=$(( 16#$hash % ${#characters[@]} ))
 expected_character="${characters[$char_index]}"
@@ -32,15 +32,15 @@ echo "Index: $char_index"
 echo "Expected character: $expected_character"
 echo ""
 
-# Test claude-overlord.sh directly
-echo "Testing claude-overlord.sh..."
+# Test claude-overmind.sh directly
+echo "Testing claude-overmind.sh..."
 LOG_FILE="/tmp/test-character-assignment.log"
 rm -f "$LOG_FILE"
 
 echo "{\"session_id\":\"$TEST_SESSION_ID\",\"hook_event_name\":\"Stop\"}" | \
-  CLAUDE_OVERLORD_SOUNDS="$SOUND_DIR" \
-  CLAUDE_OVERLORD_LOG="$LOG_FILE" \
-  ./claude-overlord.sh
+  CLAUDE_OVERMIND_SOUNDS="$SOUND_DIR" \
+  CLAUDE_OVERMIND_LOG="$LOG_FILE" \
+  ./claude-overmind.sh
 
 # Wait for log to be written
 sleep 0.5
@@ -69,9 +69,9 @@ for i in 1 2 3 4 5; do
   rm -f "$LOG_FILE"
 
   echo "{\"session_id\":\"$session\",\"hook_event_name\":\"Stop\"}" | \
-    CLAUDE_OVERLORD_SOUNDS="$SOUND_DIR" \
-    CLAUDE_OVERLORD_LOG="$LOG_FILE" \
-    ./claude-overlord.sh
+    CLAUDE_OVERMIND_SOUNDS="$SOUND_DIR" \
+    CLAUDE_OVERMIND_LOG="$LOG_FILE" \
+    ./claude-overmind.sh
 
   sleep 0.2
 
@@ -80,9 +80,9 @@ for i in 1 2 3 4 5; do
   rm -f "$LOG_FILE"
 
   echo "{\"session_id\":\"$session\",\"hook_event_name\":\"Stop\"}" | \
-    CLAUDE_OVERLORD_SOUNDS="$SOUND_DIR" \
-    CLAUDE_OVERLORD_LOG="$LOG_FILE" \
-    ./claude-overlord.sh
+    CLAUDE_OVERMIND_SOUNDS="$SOUND_DIR" \
+    CLAUDE_OVERMIND_LOG="$LOG_FILE" \
+    ./claude-overmind.sh
 
   sleep 0.2
   char2=$(awk '{print $4}' "$LOG_FILE")

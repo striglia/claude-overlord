@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# download-sound.sh - Download and normalize audio from YouTube for claude-overlord
+# download-sound.sh - Download and normalize audio from YouTube for claude-overmind
 #
 # Usage: ./download-sound.sh <character> <youtube-url> [output-filename]
 #
